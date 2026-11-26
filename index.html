@@ -241,6 +241,16 @@ body.picker #panel>.picker-photo{grid-column:2;grid-row:1/span 18;align-self:cen
  body.picker #panel{display:block}
  body.picker #panel>.picker-photo{max-height:32vh;max-width:520px;margin:12px auto}
 }
+</style><style>
+html body.editor #panel{position:fixed;inset:0;margin:auto;transform:none;box-sizing:border-box;width:min(1480px,94vw);height:fit-content;max-height:100dvh;padding:clamp(16px,3vw,44px)}
+html body.editor .setup-grid{grid-template-columns:minmax(240px,26%) minmax(0,1fr)}
+html body.editor #map{width:100%;height:auto;max-height:none;aspect-ratio:800/380;box-sizing:content-box;max-width:calc(100% - 2px);margin:18px 0}
+html body.editor .map-tools{margin-top:auto}
+#bar .hub-state[data-grace="true"]{color:#fff0b0}
+#bar .hub-state[data-grace="true"] i{animation:hub-grace .8s ease-in-out infinite alternate}
+@keyframes hub-grace{from{opacity:.25}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){#bar .hub-state[data-grace="true"] i{animation:none}}
+@media(max-width:700px){html body.editor .setup-grid{grid-template-columns:1fr}html body.editor #panel{max-height:calc(100dvh - 28px)}}
 </style></head><body><canvas id="view"></canvas><div id="bar"></div><section id="panel"></section><div id="controls"></div><div id="notice"></div><div id="stats"></div><script>/* The MIT License
 
 Copyright © 2010-2023 three.js authors
@@ -997,11 +1007,17 @@ const keys=new Set(),input={x:0,z:0,turn:0,intake:false,shoot:false,climb:false}
 function phaseAt(t){return t<20?'AUTO':t<30?'TRANSITION':t<130?'SHIFT '+(1+Math.floor((t-30)/25)):t<160?'END GAME':'FINAL'}
 let preMatch=0,autoHold=0,firstInactive=0;
 function controlsLocked(){return preMatch>0||autoHold>0}
-function active(side){
+function scheduledHubActive(side){
  if(elapsed<30||elapsed>=130)return true;
  const shift=Math.floor((elapsed-30)/25);
  return side!==(shift%2===0?firstInactive:-firstInactive);
 }
+function graceRemaining(side){
+ if(scheduledHubActive(side))return 0;
+ const shiftStart=30+25*Math.floor((elapsed-30)/25);
+ return Math.max(0,shiftStart+2-elapsed);
+}
+function active(side){return scheduledHubActive(side)||graceRemaining(side)>0}
 const pieces=[],grid=new Map(),cell=.32;const cellKey=(x,z)=>Math.floor((x+24)/cell)*256+Math.floor((z+12)/cell);
 function rebuildGrid(){grid.clear();for(const [i,f] of pieces.entries()){f.collisionIndex=i;if(f.state!=='floor'&&f.state!=='air')continue;const k=cellKey(f.x,f.z);let row=grid.get(k);if(!row)grid.set(k,row=[]);row.push(f)}}
 function nearby(x,z,r,fn){let span=Math.ceil(r/cell),key=cellKey(x,z);for(let i=-span;i<=span;i++)for(let j=-span;j<=span;j++){let row=grid.get(key+i*256+j);if(row)for(const f of row)fn(f)}}
@@ -1540,7 +1556,7 @@ function editor(){
  focus.set(0,.24,0);camDist=2.05;camHeight=1.08;yaw=.85;balls.count=0;
  panel.innerHTML=`<header class="setup-header"><div><div class="ey">2026 Rebuilt</div><h2>Single Player</h2></div><button id="home">Main menu</button></header>
  <div class="setup-grid"><aside class="setup-robot"><div class="ey">Robot</div><div class="robot-summary"><div><strong class="team-number">${player.spec[12]}</strong><h3>${player.spec[0]}</h3><span>${player.spec[1]}</span></div><button id="back">Change</button></div><img class="robot-preview" src="${setupPreviews[player.spec[12]]}" alt="${player.spec[0]}"><div class="ey alliance-heading">Alliance</div><div class="row"><button id="blue-side" aria-pressed="${s>0}">Blue</button><button id="red-side" aria-pressed="${s<0}">Red</button></div></aside>
- <section class="setup-map"><div class="map-heading"><h3>Starting position</h3><button id="reset-spot">↶ Reset spot</button></div><canvas id="map" width="800" height="380" aria-label="Drag to set starting position"></canvas><div class="row map-tools"><span>Drag along the starting line</span><button id="left" aria-label="Turn left">↶</button><button id="right" aria-label="Turn right">↷</button><button id="move-up" aria-label="Move up the starting line">↑</button><button id="move-down" aria-label="Move down the starting line">↓</button></div></section></div>
+ <section class="setup-map"><div class="map-heading"><h3>Starting position</h3><button id="reset-spot">↶ Reset spot</button></div><canvas id="map" width="800" height="380" aria-label="Drag to set starting position"></canvas><div class="row map-tools"><span>Drag to place. Start on your side or under your trench.</span><button id="left" aria-label="Turn left">↶</button><button id="right" aria-label="Turn right">↷</button><button id="move-up" aria-label="Move up the starting line">↑</button><button id="move-down" aria-label="Move down the starting line">↓</button></div></section></div>
  <footer class="setup-footer"><button id="setup-back">Back</button><button class="gold" id="start">Start match</button></footer>`;
  const setAlliance=side=>{
   player.side=side;
@@ -1568,12 +1584,32 @@ function draw(){
  }
  ctx.fillStyle='#edc840';
  for(const [x,y,z] of fuelSeeds)if(Math.abs(x)<L&&y<.2)ctx.fillRect(xx(x)-1.3,zz(z)-1.3,2.6,2.6);
- ctx.save();ctx.translate(xx(spot.x),zz(spot.z));ctx.rotate(-spot.a);
+ ctx.save();ctx.translate(xx(spot.x),zz(spot.z));ctx.scale(sx,sy);ctx.rotate(-spot.a);
  ctx.fillStyle=s>0?'#99bcff':'#ff9b91';
- ctx.fillRect(-player.foot.w*sx/2,-player.foot.d*sy/2,player.foot.w*sx,player.foot.d*sy);
- ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(25,0);ctx.lineTo(7,-7);ctx.lineTo(7,7);ctx.fill();ctx.restore();
+ ctx.fillRect(-player.foot.w/2,-player.foot.d/2,player.foot.w,player.foot.d);
+ ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(player.foot.w*.42,0);ctx.lineTo(0,-.12);ctx.lineTo(0,.12);ctx.fill();ctx.restore();
 }draw();
-function place(e){const r=map.getBoundingClientRect();spot.z=clamp(((e.clientY-r.top)/r.height*380-190)/sy,-W+.55,W-.55);draw()}map.onpointerdown=e=>{map.setPointerCapture(e.pointerId);place(e)};map.onpointermove=e=>{if(map.hasPointerCapture(e.pointerId))place(e)};function turn(n){spot.a+=n*PI/12;spot.x=s*(H+.5969+(Math.abs(Math.cos(spot.a))*player.foot.w+Math.abs(Math.sin(spot.a))*player.foot.d)/2);draw()}btn('left','',()=>turn(1));btn('right','',()=>turn(-1));function moveSpot(delta){spot.z=clamp(spot.z+delta,-W+.55,W-.55);draw()}btn('move-up','',()=>moveSpot(-.25));btn('move-down','',()=>moveSpot(.25));btn('back','',picker);btn('start','',launch)}
+function setStart(x,z){
+ const cos=Math.abs(Math.cos(spot.a)),sin=Math.abs(Math.sin(spot.a));
+ const halfX=(cos*player.foot.w+sin*player.foot.d)/2;
+ const halfZ=(sin*player.foot.w+cos*player.foot.d)/2;
+ spot.z=clamp(z,-W+halfZ,W-halfZ);
+ const underTrench=Math.abs(spot.z)-halfZ>=Math.max(trenchStart,2.6035+.1524);
+ const limit=underTrench?H-trenchWidth/2:H+.5969;
+ spot.x=s*clamp(s*x,limit+halfX,L-halfX);
+ draw();
+}
+function place(e){
+ const r=map.getBoundingClientRect();
+ setStart(((e.clientX-r.left)/r.width*map.width-400)/sx,((e.clientY-r.top)/r.height*map.height-190)/sy);
+}
+map.onpointerdown=e=>{map.setPointerCapture(e.pointerId);place(e)};
+map.onpointermove=e=>{if(map.hasPointerCapture(e.pointerId))place(e)};
+function turn(n){spot.a+=n*PI/12;setStart(spot.x,spot.z)}
+btn('left','',()=>turn(1));btn('right','',()=>turn(-1));
+btn('move-up','',()=>setStart(spot.x,spot.z-.25));btn('move-down','',()=>setStart(spot.x,spot.z+.25));
+btn('back','',picker);btn('start','',launch)}
+
 function gameControls(){controls.innerHTML='<button class="pause padtop padright" aria-label="Pause" id="pause">Ⅱ</button><div id="meter" class="meter padleft padtop"></div><div class="stick padleft" style="bottom:21px" id="drive"><i class="knob"></i><span>DRIVE</span></div><div class="stick turn" style="bottom:18px;right:194px" id="turn"><i class="knob"></i><span>TURN</span></div><button class="action" style="bottom:18px;right:100px" id="feed">Intake</button><button class="action firing" style="bottom:18px;right:14px" id="fire">Shoot</button><button class="smallbtn" style="bottom:78px;right:16px" id="climb">Climb</button>';
 stick('drive',(x,z)=>{input.x=x;input.z=z});stick('turn',x=>input.turn=x);hold('feed','intake');hold('fire','shoot');hold('climb','climb');btn('pause','',pauseGame)}
 function launch(){
@@ -1587,25 +1623,25 @@ function launch(){
 }
 const practiceDuration=160;
 function matchReadout(){
- const phase=preMatch>0?'READY':autoHold>0?'AUTO COMPLETE':phaseAt(elapsed);
+ let detail;
+ if(preMatch>0)detail='Ready · '+formatTime(preMatch-1e-8);
+ else if(autoHold>0)detail='Auto complete · '+formatTime(autoHold-1e-8);
+ else if(elapsed<20)detail='Auto · '+formatTime(20-elapsed);
+ else if(elapsed<30)detail='Transition · '+formatTime(30-elapsed);
+ else if(elapsed<130){
+  const shift=1+Math.floor((elapsed-30)/25);
+  detail='Shift '+shift+' · '+formatTime(30+25*shift-elapsed);
+ }else detail='End game · '+formatTime(practiceDuration-elapsed);
  const clock=formatTime(practiceDuration-elapsed);
- const hub=side=>`<small class="hub-state"><i aria-hidden="true"></i>${active(side)?'Hub active':'Hub inactive'}</small>`;
- return `<div class="score-card red-side" data-active="${active(-1)}"><span>Red${hub(-1)}</span><b>${score[0]}</b></div><div class="match-clock"><b>${clock}</b><span>${phase==='TRANSITION'?'Transition · '+formatTime(30-elapsed):phase}</span></div><div class="score-card blue-side" data-active="${active(1)}"><b>${score[1]}</b><span>Blue${hub(1)}</span></div>`;
+ const hub=side=>{
+  const grace=graceRemaining(side);
+  return `<small class="hub-state" data-grace="${grace>0}"><i aria-hidden="true"></i>${grace>0?'Grace −'+formatTime(grace):active(side)?'Hub active':'Hub inactive'}</small>`;
+ };
+ return `<div class="score-card red-side" data-active="${active(-1)}"><span>Red${hub(-1)}</span><b>${score[0]}</b></div><div class="match-clock"><b>${clock}</b><span>${detail}</span></div><div class="score-card blue-side" data-active="${active(1)}"><b>${score[1]}</b><span>Blue${hub(1)}</span></div>`;
 }
 function renderScore(){
  const html=matchReadout();
  if(bar.innerHTML!==html)bar.innerHTML=html;
- const notice=$('#notice');
- const phase=phaseAt(elapsed);
- const first=firstInactive===1?'Blue':'Red';
- const text=preMatch>0?`Match starts in ${Math.ceil(preMatch-1e-8)}`:
-  autoHold>0?`Auto complete · Transition in ${Math.ceil(autoHold-1e-8)}`:
-  phase==='TRANSITION'&&firstInactive?`Transition · ${first} hub inactive first`:
-  phase.startsWith('SHIFT')?`Your hub is ${active(player.side)?'active':'inactive'} · ${formatTime(30+25*(1+Math.floor((elapsed-30)/25))-elapsed)} left`:'';
- if(notice.textContent!==text){
-  notice.setAttribute('data-countdown',String(controlsLocked()));
-  notice.textContent=text;
- }
 }
 function pauseGame(){
  if(mode!=='match')return;
