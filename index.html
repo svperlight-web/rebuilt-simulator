@@ -251,6 +251,37 @@ html body.editor .map-tools{margin-top:auto}
 @keyframes hub-grace{from{opacity:.25}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){#bar .hub-state[data-grace="true"] i{animation:none}}
 @media(max-width:700px){html body.editor .setup-grid{grid-template-columns:1fr}html body.editor #panel{max-height:calc(100dvh - 28px)}}
+</style><style>
+.showcase-stage,.picker-photo,.robot-preview{
+ --glow:#536dff;
+ background:radial-gradient(ellipse at 51% 50%,color-mix(in srgb,var(--glow) 53%,#141224),#171127 61%,#0d0a17 100%);
+}
+[data-team="4414"]{--glow:#05a6a1}
+.showcase-stage{isolation:isolate;box-shadow:0 16px 48px #090515aa,inset 0 0 50px #09051570}
+.showcase-stage::before,.showcase-stage::after{
+ content:"";position:absolute;pointer-events:none;z-index:-1
+}
+.showcase-stage::before{
+ inset:12% 27%;border:1px solid color-mix(in srgb,var(--glow) 61%,transparent);
+ transform:rotate(35deg);border-radius:20%;box-shadow:0 0 35px color-mix(in srgb,var(--glow),transparent 44%)
+}
+.showcase-stage::after{
+ inset:0;background:repeating-linear-gradient(120deg,transparent 0 28px,#f2ebff0b 29px 30px)
+}
+.showcase-stage img,.picker-photo,.robot-preview{filter:none;object-fit:contain}
+.showcase-stage img{filter:drop-shadow(0 22px 15px #070510cc)}
+body.picker #panel>.picker-photo{background:radial-gradient(ellipse at center,color-mix(in srgb,var(--glow) 53%,#141224),#151023 70%)}
+
+.showcase-stage img,.picker-photo,.robot-preview{
+ mix-blend-mode:lighten;
+ filter:contrast(1.18) saturate(1.55) brightness(1.12);
+}
+.showcase-stage img{position:relative;z-index:1;transition:transform .32s ease}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ .showcase-stage:hover img{transform:scale(1.07)}
+}
+.showcase-caption{border-color:#7999ff}
+.home-showcase:has([data-team="4414"]) .showcase-caption{border-color:#52d6c9}
 </style></head><body><canvas id="view"></canvas><div id="bar"></div><section id="panel"></section><div id="controls"></div><div id="notice"></div><div id="stats"></div><script>/* The MIT License
 
 Copyright © 2010-2023 three.js authors
@@ -798,7 +829,7 @@ function hopperParticle(b,index,intake=false){
  };
 }
 function setLoad(b,n){
- b.load=n;
+ b.load=n===b.pack.length?loadCount(b):n;
  if(!b.root.visible){b.hopper.count=0;return}
  let group=b.pack;
  if(n!==group.length){
@@ -1005,8 +1036,8 @@ window.runChecks=()=>{for(const b of bots){if(b.hopper.count<0||b.modules.length
 let player=bots[0],elapsed=0,paused=false,score=[0,0],autoFuel=[0,0],towerPoints=[0,0],fuelPoints=[0,0],winner=0,accum=0,stepCount=0,bluePartner=true,lastPhase='',shake=0,autoTaken=false;
 const keys=new Set(),input={x:0,z:0,turn:0,intake:false,shoot:false,climb:false},idx=s=>s===1?1:0;
 function phaseAt(t){return t<20?'AUTO':t<30?'TRANSITION':t<130?'SHIFT '+(1+Math.floor((t-30)/25)):t<160?'END GAME':'FINAL'}
-let preMatch=0,autoHold=0,firstInactive=0;
-function controlsLocked(){return preMatch>0||autoHold>0}
+let preMatch=0,autoHold=0,firstInactive=0,resultsWait=0;
+function controlsLocked(){return preMatch>0||autoHold>0||resultsWait>0}
 function scheduledHubActive(side){
  if(elapsed<30||elapsed>=130)return true;
  const shift=Math.floor((elapsed-30)/25);
@@ -1025,8 +1056,48 @@ let playSound=()=>{};
 function seedGame(){elapsed=0;paused=false;score=[0,0];autoFuel=[0,0];towerPoints=[0,0];fuelPoints=[0,0];autoTaken=false;winner=0;accum=0;pieces.length=0;stepCount=0;for(const flow of hubFlow){flow.lane=0;flow.release=0;flow.ready.fill(0)}
  const fresh=(x,y,z,state)=>({x,y,z,vx:0,vy:0,vz:0,state,owner:null,side:0,px:x,py:y,pz:z,drawX:x,drawY:y,drawZ:z,spin:new T.Quaternion()});
  for(const v of fuelSeeds)pieces.push(fresh(...v,Math.abs(v[0])>L?'outpost':'floor'));
- for(const [i,b] of bots.entries()){b.vx=b.vz=b.climb=b.root.position.y=b.impact=0;b.angle=b.side>0?PI:0;b.root.position.set(b.side*(H+.62+b.foot.w/2),0,(i%3-1)*1.7);b.root.visible=b===player;b.turret.rotation.y=0;b.shotIndex=b.cool=b.pick=0;b.pack=[];b.rideY=b.pitch=b.roll=b.liftSpeed=b.turnRate=0;resetClimber(b);for(let j=0;j<(b===player?8:0);j++){let f=fresh(0,0,0,'held');f.owner=b;f.binBall=hopperParticle(b,j);pieces.push(f);b.pack.push(f)}setLoad(b,b.pack.length)}balls.count=pieces.length;rebuildGrid()}
-function gain(b,f,direction=1){if(b.pack.length>=fuelCapacity(b))return;f.state='held';f.owner=b;f.binBall=intakeFuelParticle(b,b.pack.length,direction);b.pack.push(f);setLoad(b,b.pack.length)}
+ for(const [i,b] of bots.entries()){b.vx=b.vz=b.climb=b.root.position.y=b.impact=0;b.angle=b.side>0?PI:0;b.root.position.set(b.side*(H+.62+b.foot.w/2),0,(i%3-1)*1.7);b.root.visible=b===player;b.turret.rotation.y=0;b.shotIndex=b.cool=b.pick=0;b.pack=[];b.transit=[];b.rideY=b.pitch=b.roll=b.liftSpeed=b.turnRate=0;resetClimber(b);for(let j=0;j<(b===player?8:0);j++){let f=fresh(0,0,0,'held');f.owner=b;f.binBall=hopperParticle(b,j);pieces.push(f);b.pack.push(f)}setLoad(b,b.pack.length)}balls.count=pieces.length;rebuildGrid()}
+function loadCount(b){return b.pack.length+(b.transit?.length||0)}
+function intakeAvailable(b){return !b.hopperClosed&&b.intakeExtended&&b.intakePose>=.92}
+function gain(b,f,direction=1){
+ if(!intakeAvailable(b)||loadCount(b)>=fuelCapacity(b))return;
+ b.root.updateMatrixWorld(true);
+ const start=b.body.worldToLocal(V(f.x,f.y,f.z));
+ const q=intakeFuelParticle(b,loadCount(b),direction);
+ const roller=b.spec[12]===4414?.51:.46;
+ f.state='transit';f.owner=b;
+ b.transit.push({f,q,progress:0,duration:.34,path:[start,V(direction*roller,.12,start.z),V(direction*(roller-.07),.23,q.z),V(q.x,q.y,q.z)]});
+ setLoad(b,b.pack.length);
+}
+function advanceRobotFuel(b,dt){
+ if(!b.transit?.length)return;
+ const position=V();
+ b.root.updateMatrixWorld(true);
+ let changed=false;
+ for(let i=0;i<b.transit.length;){
+  const entry=b.transit[i],{f,q,path,duration}=entry;
+  entry.progress=Math.min(1,entry.progress+dt/duration);
+  const t=entry.progress*(path.length-1),segment=Math.min(path.length-2,Math.floor(t));
+  const destination=entry.shot&&segment===path.length-2?muzzleLocal(b):path[segment+1];
+  position.lerpVectors(path[segment],destination,t-segment);
+  b.body.localToWorld(position);
+  f.x=position.x;f.y=position.y;f.z=position.z;
+  const heading=b.angle;
+  f.spin.premultiply(hopperSpin.setFromAxisAngle(hopperAxis.set(Math.sin(heading),0,Math.cos(heading)),dt*(entry.shot?18:-12)));
+  if(entry.progress<1){i++;continue}
+  b.transit.splice(i,1);changed=true;
+  if(entry.shot){
+   const plan=launchPlan(b);
+   const miss=plan.error-b.turret.rotation.y;
+   if((plan.legal||plan.passReady)&&((entry.manualAim&&plan.legal)||Math.abs(Math.atan2(Math.sin(miss),Math.cos(miss)))<.24)){
+    launchFuel(b,f,plan);
+    continue;
+   }
+  }
+  f.state='held';f.binBall=q;b.pack.push(f);
+ }
+ if(changed)setLoad(b,b.pack.length);
+}
 function trenchHeight(b){
  if(b.spec[12]===6328)return Math.max(.525,.508+.20*(b.roofPose||0),.475+(b.netBulge||0));
  if(b.spec[12]===4414)return Math.max(.541,.45+(b.netBulge||0));
@@ -1052,7 +1123,13 @@ function launchPlan(b){
  const error=Math.atan2(Math.sin(heading-b.angle),Math.cos(heading-b.angle));
  return {legal,passReady,error,distance:Math.hypot(dx,dz)};
 }
-function shoot(b,plan=launchPlan(b)){
+function muzzleLocal(b){
+ const yaw=b.style.ring?b.turret.rotation.y:0;
+ const lanes=b.style.wide?4:1;
+ const offset=(b.style.gunZ||0)+((b.shotIndex||0)%lanes-(lanes-1)/2)*.145;
+ return V(b.style.gunX+.112*Math.cos(yaw),b.style.gunY+.12+(b.spec[12]===6328?b.shooterPose*.045:0),offset-.112*Math.sin(yaw));
+}
+function shoot(b,plan=launchPlan(b),manualAim=false){
  if((!plan.legal&&!plan.passReady)||!b.pack.length||b.cool>0||b.climb>.04)return;
  const feeder=b.bin.back+.06;
  let feedIndex=0,best=Infinity;
@@ -1060,18 +1137,26 @@ function shoot(b,plan=launchPlan(b)){
   const q=f.binBall,cost=Math.abs(q.x-feeder)+Math.abs(q.z)*.36+Math.max(0,q.y-.36)*.58;
   if(cost<best){best=cost;feedIndex=i}
  }
- const [f]=b.pack.splice(feedIndex,1),p=b.root.position;
- f.binBall=null;
+ const [f]=b.pack.splice(feedIndex,1),q=f.binBall;
+ const tide=b.spec[12]===4414;
+ const feedX=tide?-.058:b.style.gunX;
+ const y=b.style.gunY+.12+(!tide?b.shooterPose*.045:0);
+ const start=V(q.x,q.y,q.z);
+ b.root.updateMatrixWorld(true);
+ const world=b.body.localToWorld(start.clone());
+ Object.assign(f,{state:'transit',drawX:world.x,drawY:world.y,drawZ:world.z,x:world.x,y:world.y,z:world.z});
+ b.transit??=[];
+ b.transit.push({f,q,shot:true,manualAim,progress:0,duration:(tide?.28:.30)/(b.hopperClosed?1.10:1),path:[start,V(feedX+.055,.29,0),V(feedX,.39,0),V(feedX,y,0)]});
+ b.cool+=1/(b.spec[8]*(b.hopperClosed?1.10:1));
  setLoad(b,b.pack.length);
- const y=p.y+b.style.gunY+.12+(b.blenderParts&&b.spec[12]===6328?b.shooterPose*.045:0);
+}
+function launchFuel(b,f,plan){
+ const p=b.root.position;
+ f.binBall=null;
+ const {x,y,z}=b.body.localToWorld(muzzleLocal(b));
  const heading=b.angle+(b.style.ring?b.turret.rotation.y:0);
  const forwardX=Math.cos(heading),forwardZ=-Math.sin(heading);
- const lanes=b.style.wide?4:1;
- const offset=(b.style.gunZ||0)+((b.shotIndex||0)%lanes-(lanes-1)/2)*.145;
  b.shotIndex=(b.shotIndex||0)+1;
- const tx=Math.cos(b.angle),tz=-Math.sin(b.angle);
- const x=p.x+tx*b.style.gunX-tz*offset+forwardX*.112;
- const z=p.z+tz*b.style.gunX+tx*offset+forwardZ*.112;
  const range=Math.max(.25,plan.distance-(x-p.x)*forwardX-(z-p.z)*forwardZ);
  const flight=plan.legal?.98:clamp(.48+range*.118,.56,1.91);
  // The flywheel uses power presets. The chassis supplies all launch direction.
@@ -1085,7 +1170,7 @@ function shoot(b,plan=launchPlan(b)){
   vz:forwardZ*speed+forwardX*lateral+b.vz*.35,
   state:'air',side:b.side,owner:null,legal:plan.legal,shotSide:b.side,pass:!plan.legal
  });
- b.cool+=1/(b.spec[8]*(b.hopperClosed?1.10:1));playSound('shot',b);
+ playSound('shot',b);
 }
 function ramp(x,z){
  const lane=Math.abs(z);
@@ -1194,11 +1279,11 @@ function drive(b,cmd,dt){
  const magnitude=Math.min(1,n),response=magnitude*(.73+.27*magnitude);
  const deltaX=n?x/n*speed*response-b.vx:-b.vx,deltaZ=n?z/n*speed*response-b.vz:-b.vz;
  const error=Math.hypot(deltaX,deltaZ);
- const accel=b.spec[6]*(n?1:1.3);
- const blend=Math.min(1-Math.exp(-dt*(n?11:15)),error?accel*dt/error:1);
+ const accel=b.spec[6]*(n?1.18:2.15);
+ const blend=Math.min(1-Math.exp(-dt*(n?16:27)),error?accel*dt/error:1);
  const ax=deltaX*blend,az=deltaZ*blend;
  b.vx+=ax;b.vz+=az;
- if(!n&&Math.hypot(b.vx,b.vz)<.018)b.vx=b.vz=0;
+ if(!n&&Math.hypot(b.vx,b.vz)<.065)b.vx=b.vz=0;
  const slope=(ramp(p.x+.07,p.z)-ramp(p.x-.07,p.z))/.14;
  if(Math.abs(b.vx)>.05)b.vx-=slope*2.7*dt;
  if(wheelContacts(b).some(h=>h>.005)){b.vx*=Math.exp(-dt*.30);b.vz*=Math.exp(-dt*.16)}
@@ -1208,7 +1293,7 @@ function drive(b,cmd,dt){
  const manualAim=b.spec[12]!==4414&&aim?.legal&&Math.abs(manual)>.08;
  const turretAim=b.style.ring && !manualAim && (aim?.legal||(b.spec[12]===4414&&aim?.passReady));
  const turn=aim&&!turretAim&&!manualAim?clamp(-aim.error*7,-3.55,3.55):manual*3.55;
- b.turnRate=T.MathUtils.damp(b.turnRate||0,turn,aim&&!manualAim?16:12,dt);
+ b.turnRate=T.MathUtils.damp(b.turnRate||0,turn,aim&&!manualAim?18:20,dt);
  b.angle-=b.turnRate*dt;
  p.x+=b.vx*dt;p.z+=b.vz*dt;const r=b.foot.radius;let hit=false;
  function keepOutside(x,z,hw,hd){let dx=p.x-x,dz=p.z-z,ox=hw+r-Math.abs(dx),oz=hd+r-Math.abs(dz);if(ox<=0||oz<=0)return;if(ox<oz){p.x=x+(Math.sign(dx)||1)*(hw+r);hit||=Math.abs(b.vx)>1;if(b.vx*dx<0)b.vx=0}else{p.z=z+(Math.sign(dz)||1)*(hd+r);hit||=Math.abs(b.vz)>1;if(b.vz*dz<0)b.vz=0}}
@@ -1219,8 +1304,8 @@ function drive(b,cmd,dt){
  if(!b.climb)for(const [x,y,z,w,d] of ladderRungs)if(b.spec[4]+b.rideY>y-.023)keepOutside(x,z,w,d);
  if(Math.abs(p.x)>L-r){p.x=clamp(p.x,-L+r,L-r);hit||=Math.abs(b.vx)>1;b.vx=0}if(Math.abs(p.z)>W-r){p.z=clamp(p.z,-W+r,W-r);hit||=Math.abs(b.vz)>1;b.vz=0}if(hit){b.impact=1;if(b===player)shake=.055}
  b.cool=Math.max(-dt,b.cool-dt);b.pick=Math.max(0,b.pick-dt);
- if(cmd.intake&&!b.hopperClosed&&b.intakePose!==undefined&&b.intakePose<.45)cmd={...cmd,intake:false,intakeRequested:true};
- if(cmd.intake&&b.pick<=0&&b.pack.length<fuelCapacity(b)&&b.climb<.05){let best=null,min=.38**2,direction=1;
+ if(cmd.intake&&!intakeAvailable(b))cmd={...cmd,intake:false,intakeRequested:!b.hopperClosed};
+ if(cmd.intake&&b.pick<=0&&loadCount(b)<fuelCapacity(b)&&b.climb<.05){let best=null,min=.38**2,direction=1;
  for(const intake of b.intakes){
   const fx=p.x+Math.cos(b.angle)*r*.8*intake.direction,fz=p.z-Math.sin(b.angle)*r*.8*intake.direction;
   nearby(fx,fz,.40,f=>{const d=(fx-f.x)**2+(fz-f.z)**2;if(f.state==='floor'&&(f.spillUntil??0)<=elapsed&&d<min){best=f;min=d;direction=intake.direction}});
@@ -1233,9 +1318,9 @@ function drive(b,cmd,dt){
   const delta=Math.atan2(Math.sin(target-yaw),Math.cos(target-yaw));
   b.turret.rotation.y+=clamp(delta,-dt*6.8,dt*6.8);
   const miss=plan.error-b.turret.rotation.y;
-  if((manualAim&&plan.legal)||Math.abs(Math.atan2(Math.sin(miss),Math.cos(miss)))<(plan.legal?.10:.045))shoot(b,plan);
+  if((manualAim&&plan.legal)||Math.abs(Math.atan2(Math.sin(miss),Math.cos(miss)))<(plan.legal?.10:.045))shoot(b,plan,manualAim);
  }
- animateBot(b,dt,ax/(dt*8),az/(dt*8),cmd.intake||cmd.intakeRequested,cmd.shoot);rideBump(b,dt)}
+ animateBot(b,dt,ax/(dt*8),az/(dt*8),cmd.intake||cmd.intakeRequested,cmd.shoot||b.transit?.some(entry=>entry.shot));rideBump(b,dt)}
 function awardTower(auto){for(const side of [-1,1]){let levels=bots.filter(b=>b.root.visible&&b.side===side&&b.climb>.09).map(b=>auto?15:b.climb+.125>1.143?30:b.climb+.125>.686?20:10);if(auto)levels=levels.slice(0,2);const pts=levels.reduce((a,b)=>a+b,0);towerPoints[idx(side)]+=pts;score[idx(side)]+=pts}}
 function scored(f){
  const id=idx(f.side);
@@ -1359,7 +1444,7 @@ function moveFuel(dt){
 }
 function advanceFuel(dt){
  for(const f of pieces){
-  if(f.state==='held')continue;
+  if(f.state==='held'||f.state==='transit')continue;
   if(f.state==='outpost'){
    if(elapsed>20+(f.id??(f.id=f.collisionIndex%24))*3){
     f.x=Math.sign(f.x)*(L-.2);f.drawX=f.x;f.vx=-Math.sign(f.x)*1.4;f.state='air';f.legal=false;
@@ -1408,6 +1493,11 @@ const priorRobot=new T.Object3D(),renderRestore=new T.Object3D(),spinAxis=V(),sp
 let driveFrameReady=false;
 function simStep(dt){
  if(paused||mode!=='match')return;
+ if(resultsWait>0){
+  resultsWait=Math.max(0,resultsWait-dt);
+  if(resultsWait<1e-8){resultsWait=0;finishPractice()}
+  return;
+ }
  if(preMatch>0){
   preMatch=Math.max(0,preMatch-dt);
   if(preMatch<1e-8)preMatch=0;
@@ -1433,7 +1523,15 @@ function simStep(dt){
   driveFrameReady=false;
   return;
  }
- if(elapsed>=practiceDuration){elapsed=practiceDuration;awardTower(false);finishPractice();return}
+ if(elapsed>=practiceDuration){
+  elapsed=practiceDuration;
+  resultsWait=3;
+  for(const bot of bots)bot.vx=bot.vz=bot.turnRate=bot.liftSpeed=0;
+  driveFrameReady=false;
+  syncFuel();
+  awardTower(false);
+  return;
+ }
  priorRobot.position.copy(player.root.position);priorRobot.quaternion.copy(player.root.quaternion);
  driveFrameReady=true;
  for(const f of pieces){f.drawX=f.x;f.drawY=f.y;f.drawZ=f.z}
@@ -1442,6 +1540,7 @@ function simStep(dt){
  const c=Math.cos(b.angle),s=Math.sin(b.angle);
  const dx=(oldVX-b.vx)/dt,dz=(oldVZ-b.vz)/dt;
  moveHopper(b,dt,clamp(c*dx-s*dz,-31,31),clamp((oldLift-(b.liftSpeed||0))/dt,-29,29),clamp(s*dx+c*dz,-31,31));
+ advanceRobotFuel(b,dt);
  moveFuel(dt);
  for(const f of pieces){
   if(f.state==='chute'){
@@ -1514,7 +1613,7 @@ function season(){
    </nav>
   </section>
   <section class="home-showcase" aria-label="Featured robot">
-   <div class="showcase-stage"><img src="${setupPreviews[spec[12]]}" alt="${spec[0]} robot"></div>
+   <div class="showcase-stage" data-team="${spec[12]}"><img src="${setupPreviews[spec[12]]}" alt="${spec[0]} robot"></div>
    <div class="showcase-caption"><strong>${spec[12]}</strong><div><h2>${spec[0]}</h2><p>${spec[1]}</p></div>
     <div class="showcase-arrows"><button id="home-prev" aria-label="Previous robot">‹</button><button id="home-next" aria-label="Next robot">›</button></div>
    </div>
@@ -1538,7 +1637,7 @@ function season(){
 }
 function picker(){screen('picker');player=bots[selected];for(const b of bots)b.root.visible=b===player;player.root.position.set(0,0,0);player.angle=0;resetClimber(player);player.root.rotation.set(0,0,0);focus.set(0,.36,0);camHeight=.79;camDist=1.78;yaw=.78;offcentre();balls.count=0;const s=player.spec;
 const rows=[['Speed',s[5],5,'m/s'],['Acceleration',s[6],9,'m/s²'],['Push',s[7],6,''],[rateLabels[player.i],s[8],34,' BPS'],['Intake rate',s[9],20,'/s'],['Sim capacity',s[10],105,''],['Shoot on move',Math.round(s[11]*100),100,'%']];
-panel.innerHTML='<div class="ey">Houston 2026 &nbsp; / &nbsp; '+String(selected+1).padStart(2,'0')+' of '+String(bots.length).padStart(2,'0')+'</div><h2>'+s[0]+'</h2><p>'+s[1]+'</p><p>'+robotNotes[player.i]+'</p><p><a style="color:#d9be87" target="_blank" rel="noopener" href="'+designRefs[player.i]+'">Design reference</a> · <a style="color:#d9be87" target="_blank" rel="noopener" href="https://frc-events.firstinspires.org/2026/team/'+s[12]+'">Matches</a></p>'+rows.map(([k,v,max,u])=>'<div class="stat"><span>'+k+'</span><span class="rail"><i style="width:'+v/max*100+'%"></i></span><b>'+v+u+'</b></div>').join('')+'<div class="row"><button class="nav" aria-label="Previous robot" id="prev">‹</button><button class="nav" aria-label="Next robot" id="cycle">›</button><button class="gold" id="next">Set start →</button></div>';btn('prev','',()=>{selected=(selected+bots.length-1)%bots.length;picker()});btn('cycle','',()=>{selected=(selected+1)%bots.length;picker()});btn('next','',editor);panel.insertAdjacentHTML('beforeend',`<img class="picker-photo" src="${setupPreviews[s[12]]}" alt="${s[0]} robot"><button id="picker-home">Main menu</button>`);btn('picker-home','',season);panel.insertAdjacentHTML('beforeend','<div class="roster"><button id="pick6328">6328 · Darwin</button><button id="pick4414">4414 · Rip Current</button></div>');for(const [i,b] of bots.entries()){const id='pick'+b.spec[12];$( '#'+id).setAttribute('aria-pressed',String(i===selected));btn(id,'',()=>{selected=i;picker()})}}
+panel.innerHTML='<div class="ey">Houston 2026 &nbsp; / &nbsp; '+String(selected+1).padStart(2,'0')+' of '+String(bots.length).padStart(2,'0')+'</div><h2>'+s[0]+'</h2><p>'+s[1]+'</p><p>'+robotNotes[player.i]+'</p><p><a style="color:#d9be87" target="_blank" rel="noopener" href="'+designRefs[player.i]+'">Design reference</a> · <a style="color:#d9be87" target="_blank" rel="noopener" href="https://frc-events.firstinspires.org/2026/team/'+s[12]+'">Matches</a></p>'+rows.map(([k,v,max,u])=>'<div class="stat"><span>'+k+'</span><span class="rail"><i style="width:'+v/max*100+'%"></i></span><b>'+v+u+'</b></div>').join('')+'<div class="row"><button class="nav" aria-label="Previous robot" id="prev">‹</button><button class="nav" aria-label="Next robot" id="cycle">›</button><button class="gold" id="next">Set start →</button></div>';btn('prev','',()=>{selected=(selected+bots.length-1)%bots.length;picker()});btn('cycle','',()=>{selected=(selected+1)%bots.length;picker()});btn('next','',editor);panel.insertAdjacentHTML('beforeend',`<img class="picker-photo" data-team="${s[12]}" src="${setupPreviews[s[12]]}" alt="${s[0]} robot"><button id="picker-home">Main menu</button>`);btn('picker-home','',season);panel.insertAdjacentHTML('beforeend','<div class="roster"><button id="pick6328">6328 · Darwin</button><button id="pick4414">4414 · Rip Current</button></div>');for(const [i,b] of bots.entries()){const id='pick'+b.spec[12];$( '#'+id).setAttribute('aria-pressed',String(i===selected));btn(id,'',()=>{selected=i;picker()})}}
 
 
 let spotOwner=null,spotSide=0;
@@ -1555,7 +1654,7 @@ function editor(){
  player.root.rotation.y=.42;
  focus.set(0,.24,0);camDist=2.05;camHeight=1.08;yaw=.85;balls.count=0;
  panel.innerHTML=`<header class="setup-header"><div><div class="ey">2026 Rebuilt</div><h2>Single Player</h2></div><button id="home">Main menu</button></header>
- <div class="setup-grid"><aside class="setup-robot"><div class="ey">Robot</div><div class="robot-summary"><div><strong class="team-number">${player.spec[12]}</strong><h3>${player.spec[0]}</h3><span>${player.spec[1]}</span></div><button id="back">Change</button></div><img class="robot-preview" src="${setupPreviews[player.spec[12]]}" alt="${player.spec[0]}"><div class="ey alliance-heading">Alliance</div><div class="row"><button id="blue-side" aria-pressed="${s>0}">Blue</button><button id="red-side" aria-pressed="${s<0}">Red</button></div></aside>
+ <div class="setup-grid"><aside class="setup-robot"><div class="ey">Robot</div><div class="robot-summary"><div><strong class="team-number">${player.spec[12]}</strong><h3>${player.spec[0]}</h3><span>${player.spec[1]}</span></div><button id="back">Change</button></div><img class="robot-preview" data-team="${player.spec[12]}" src="${setupPreviews[player.spec[12]]}" alt="${player.spec[0]}"><div class="ey alliance-heading">Alliance</div><div class="row"><button id="blue-side" aria-pressed="${s>0}">Blue</button><button id="red-side" aria-pressed="${s<0}">Red</button></div></aside>
  <section class="setup-map"><div class="map-heading"><h3>Starting position</h3><button id="reset-spot">↶ Reset spot</button></div><canvas id="map" width="800" height="380" aria-label="Drag to set starting position"></canvas><div class="row map-tools"><span>Drag to place. Start on your side or under your trench.</span><button id="left" aria-label="Turn left">↶</button><button id="right" aria-label="Turn right">↷</button><button id="move-up" aria-label="Move up the starting line">↑</button><button id="move-down" aria-label="Move down the starting line">↓</button></div></section></div>
  <footer class="setup-footer"><button id="setup-back">Back</button><button class="gold" id="start">Start match</button></footer>`;
  const setAlliance=side=>{
@@ -1614,7 +1713,7 @@ function gameControls(){controls.innerHTML='<button class="pause padtop padright
 stick('drive',(x,z)=>{input.x=x;input.z=z});stick('turn',x=>input.turn=x);hold('feed','intake');hold('fire','shoot');hold('climb','climb');btn('pause','',pauseGame)}
 function launch(){
  screen('match');player=bots[selected];
- preMatch=3;autoHold=0;firstInactive=0;
+ preMatch=3;autoHold=0;firstInactive=0;resultsWait=0;
  player.hopperClosed=false;player.intakeExtended=false;player.intakePose=0;player.shooterPose=0;player.roofOpen=false;player.roofPose=0;player.netBulge=0;
  seedGame();driveFrameReady=false;
  player.root.position.set(spot.x,0,spot.z);player.angle=spot.a;player.root.rotation.set(0,spot.a,0);poseBlenderRobot(player,1,false,false);
@@ -1624,7 +1723,8 @@ function launch(){
 const practiceDuration=160;
 function matchReadout(){
  let detail;
- if(preMatch>0)detail='Ready · '+formatTime(preMatch-1e-8);
+ if(resultsWait>0)detail='Match over · '+formatTime(resultsWait-1e-8);
+ else if(preMatch>0)detail='Ready · '+formatTime(preMatch-1e-8);
  else if(autoHold>0)detail='Auto complete · '+formatTime(autoHold-1e-8);
  else if(elapsed<20)detail='Auto · '+formatTime(20-elapsed);
  else if(elapsed<30)detail='Transition · '+formatTime(30-elapsed);
@@ -1857,7 +1957,7 @@ function mountBlenderRobot(b) {
 }
 function poseBlenderRobot(b,dt,intake,shooting){
  if(!b.blenderParts)return;
- if(intake&&!b.hopperClosed&&b.pack.length<fuelCapacity(b))b.intakeExtended=true;
+ if(intake&&!b.hopperClosed&&loadCount(b)<fuelCapacity(b))b.intakeExtended=true;
  b.intakePose=T.MathUtils.damp(b.intakePose,b.intakeExtended?1:0,13,dt);
  b.roofPose=T.MathUtils.damp(b.roofPose,b.roofOpen?1:0,9,dt);
  b.shooterPose=T.MathUtils.damp(b.shooterPose,shooting?1:0,17,dt);
@@ -2046,6 +2146,14 @@ function controlSettings(back){
 }
 function toggleHopper(){
  if(mode!=='match'||paused||controlsLocked()||!player.blenderParts)return;
+ if(!player.hopperClosed&&player.transit?.length){
+  for(const {f,shot} of player.transit){
+   if(shot)continue;
+   Object.assign(f,{state:'air',owner:null,legal:false,vx:player.vx,vy:0,vz:player.vz,spillUntil:elapsed+.35});
+  }
+  player.transit=player.transit.filter(entry=>entry.shot);
+  setLoad(player,player.pack.length);
+ }
  player.hopperClosed=!player.hopperClosed;
  player.intakeExtended=!player.hopperClosed;
  updateHopperButton();
