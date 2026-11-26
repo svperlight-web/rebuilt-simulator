@@ -90,6 +90,124 @@ body.results #panel{width:min(1040px,94vw)}
 .score-breakdown{background:#231611}
 .score-breakdown th,.score-breakdown td{border-color:#44322a}
 @media(max-width:630px){body.editor .setup-grid,.result-grid{grid-template-columns:1fr}.robot-preview{max-height:145px}body.editor #home{position:static}#bar .score-card,#bar .match-clock{min-width:85px}body.editor #map{margin:11px 0}}
+</style><style>
+:root{--broadcast:#101923;--surface:#172431;--outline:#354658;--accent:#9aebd6;--text:#edf5f8}
+body.season #panel,body.picker #panel{background:linear-gradient(90deg,#101923 62%,#10192300)}
+body.season #enter,body #panel button.gold{background:var(--accent);color:#10221e;border-color:var(--accent)}
+body #panel button{background:var(--surface);border-color:var(--outline)}
+body.editor,body.results,body.editor #panel,body.results #panel{background:var(--broadcast)}
+body.editor .setup-header{justify-content:flex-start;text-align:left;border-bottom:1px solid var(--outline);margin-bottom:16px}
+body.editor .setup-grid{align-items:start}
+body.editor .setup-robot{background:var(--surface);border:1px solid var(--outline);border-radius:12px;padding:14px}
+body.editor #back{right:14px;top:37px}
+body.editor #map{margin:14px 0;border:1px solid var(--outline);border-radius:10px}
+.robot-preview{background:radial-gradient(ellipse at 50% 58%,#314657,#111c28 72%);border-color:var(--outline)}
+body.editor .setup-footer{border-color:var(--outline)}
+.roster button[aria-pressed="true"]{outline:2px solid var(--accent)}
+#bar .score-card,#bar .match-clock{min-width:clamp(77px,15vw,142px);min-height:54px}
+#bar .red-side{background:#8f293e;border-radius:8px 0 0 8px}
+#bar .blue-side{background:#164d97;border-radius:0 8px 8px 0}
+#bar .match-clock{background:#111d28}
+#bar .score-card[data-active="false"]{background:#273542}
+.hub-state{display:flex!important;gap:4px;align-items:center;margin-top:3px}
+.hub-state i{width:6px;height:6px;border-radius:50%;background:#a4f9d9}
+[data-active="false"] .hub-state i{background:#aab7c5}
+body.match #notice:not(:empty){background:#101923f2;border:1px solid var(--outline);border-bottom:3px solid var(--accent);padding:10px 14px;color:#edf5f8}
+body.match #notice[data-countdown="true"]{top:34%;font-size:clamp(20px,4vw,42px)}
+body.paused-match #panel{background:#101923f5;border-color:var(--outline)}
+body.paused-match .pause-actions button.gold{background:var(--accent);color:#10221e;border-color:var(--accent)}
+.pause-score .score-card[data-active="false"]{opacity:.72}
+.result-hero{border-color:var(--outline)}
+.result-red{background:#651f31;color:#fff}.result-blue{background:#174781}
+.your-score,.result-grid section+section,.score-breakdown{background:var(--surface);border-color:var(--outline)}
+.breakdown-label{background:#263b4b;color:var(--text)}
+.score-breakdown th,.score-breakdown td{border-color:var(--outline)}
+.score-split{display:flex;gap:3px;height:4px;margin-top:6px;border-radius:4px;overflow:hidden;background:#314252}
+.score-split i:first-child{background:#fa8297}.score-split i:last-child{background:#7bb9ff}
+.result-outcome{display:block;font-weight:700;color:var(--accent);margin:.55em 0}
+@media(max-width:600px){body.editor .setup-grid,.result-grid{grid-template-columns:1fr}body.editor #panel,body.results #panel{max-height:calc(100dvh - 48px);overflow:auto}body.editor .robot-preview{max-height:25vh}#bar .score-card{padding-inline:7px}}
+</style><style>
+body.editor #panel{display:flex;flex-direction:column;inset:0;margin:auto;transform:none;height:fit-content;max-height:100dvh;overflow:auto;width:min(1320px,94vw)}
+body.editor .setup-header{justify-content:center;text-align:center}
+body.editor .setup-grid{align-items:stretch}
+body.editor .setup-robot{background:transparent;border:0;padding:0}
+.robot-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--outline);border-radius:10px;padding:10px 12px;margin:6px 0 9px}
+body.editor .robot-summary h3{margin:0}
+.robot-summary span{font-size:12px;color:#b4c5d2}
+body.editor #back{position:static}
+body.editor .setup-map{display:flex;flex-direction:column}
+body.editor #map{height:auto;aspect-ratio:800/380;margin:auto 0;max-height:52vh;object-fit:contain}
+body.editor .setup-footer{margin-top:16px}
+.pause-summary{display:grid;grid-template-columns:repeat(3,1fr);margin:14px 0;border:1px solid var(--outline);border-radius:10px;overflow:hidden;text-align:center}
+.pause-summary div{display:grid;gap:4px;padding:9px 4px;background:var(--surface)}
+.pause-summary div+div{border-left:1px solid var(--outline)}
+.pause-summary span{font-size:11px;color:#b4c5d2}
+.pause-summary b{font-size:23px;font-variant-numeric:tabular-nums}
+.player-breakdown{margin:14px 0 0}
+.player-breakdown div{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--outline)}
+.player-breakdown dd{margin:0;font-variant-numeric:tabular-nums}
+@media(max-width:600px){body.editor #panel{max-height:calc(100dvh - 32px)}body.editor #map{margin:8px 0}body.editor .setup-grid{gap:12px}}
+</style><style>
+:root{color-scheme:dark;--text:#fbf4ff;--surface:#22183f;--outline:#634fa3;--accent:#f8cb72;--line:#614790}
+body{font-family:system-ui,sans-serif}
+body.season #panel,body.picker #panel{background:linear-gradient(90deg,#130d2a 46%,#201046e5 74%,transparent);width:min(49%,610px)}
+body.season h1,body.picker h2,body.editor h2,body.results h2,body.paused-match h2{color:#fff;font-weight:950;font-style:italic;text-shadow:0 3px #613bae,0 0 32px #ba65ff80}
+body.season h1{letter-spacing:-.08em}
+body.season .ey,body.picker .ey,body.editor .ey,body.results .ey{color:#dfb4ff}
+body.season #enter,body #panel button.gold{color:#220d39;background:linear-gradient(165deg,#fff0ac,#ffc463 57%,#f29a52);border:1px solid #ffe2a1;box-shadow:0 3px 0 #794334,0 0 20px #ffac4742;border-radius:12px}
+body #panel button{background:linear-gradient(#372460,#23173e);border:1px solid #7052a5;border-radius:10px}
+body #panel button:hover{filter:brightness(1.19)}
+button:focus-visible,summary:focus-visible{outline:3px solid #ffe69d;outline-offset:3px}
+body.editor,body.results{background:radial-gradient(ellipse at 50% 0%,#46206f 0%,#1e1339 48%,#100c23 85%)}
+body.editor #panel,body.results #panel{background:transparent}
+body.editor .setup-header,body.editor .setup-footer{border-color:#9564d275}
+body.editor .setup-map,.robot-summary,.your-score,.result-grid section+section{background:linear-gradient(145deg,#2e2051,#1b1435);border:1px solid #654b9b;border-radius:16px}
+body.editor .setup-map{padding:clamp(10px,2vw,22px)}
+body.editor #map{border-color:#a381e580}
+.robot-preview{border-color:#8a5fe0;background:radial-gradient(ellipse at 50% 57%,#7762a3,#3c215f 49%,#21163e 75%);box-shadow:inset 0 0 30px #452b78}
+.roster button[aria-pressed="true"],body.editor button[aria-pressed="true"]{outline:2px solid #e99cff;box-shadow:0 0 15px #d267ff65}
+.stat .rail>i{background:linear-gradient(90deg,#7654ff,#f08be5)}
+#bar .score-card,#bar .match-clock{min-height:60px;border:1px solid #ffffff38;box-shadow:inset 0 1px #ffffff3f,0 5px 18px #0703158c}
+#bar .red-side{background:linear-gradient(145deg,#db3d79,#80184f);border-radius:14px 0 0 14px}
+#bar .blue-side{background:linear-gradient(145deg,#305fd6,#273293);border-radius:0 14px 14px 0}
+#bar .match-clock{background:linear-gradient(155deg,#34245c,#171127);min-width:clamp(97px,18vw,158px)}
+#bar .score-card[data-active="false"]{background:#2c2440}
+#bar .score-card b,#bar .match-clock b{font-size:clamp(22px,3.4vw,38px);color:#fff}
+.hub-state i{background:#f9da87;box-shadow:0 0 8px #ffd778}
+[data-active="false"] .hub-state i{background:#b2a3c6;box-shadow:none}
+body.match #notice:not(:empty){top:86px;color:#fff5e4;background:linear-gradient(140deg,#3e256cee,#201337f5);border:1px solid #a578e4;border-bottom:3px solid #ffc973;box-shadow:0 6px 22px #1d083f8a;border-radius:12px}
+body.match #notice[data-countdown="true"]{top:34%;font-weight:900;text-shadow:0 0 18px #df8eff;padding:15px 24px}
+#meter{min-width:110px;background:#25173deb;border:1px solid #9070c4;border-radius:12px;color:#fff;padding:9px 12px}
+#meter .fuel-label{display:flex;justify-content:space-between;gap:12px;align-items:center}
+#meter meter{display:block;width:100%;height:8px;margin-top:5px;accent-color:#f5bd70}
+#meter meter::-webkit-meter-optimum-value{background:linear-gradient(90deg,#ff9a6f,#ffe394)}
+#controls button,.bindings{border-color:#8064b0;background:#291e47ed}
+#controls #fire{background:linear-gradient(#fce297,#f8af60);color:#23143b;border-color:#ffd692}
+#controls #feed{background:linear-gradient(#6444ad,#392461);color:#fff}
+body.paused-match #panel{background:linear-gradient(160deg,#2c1d50f7,#170e2bf9);border-color:#8561c6;box-shadow:0 0 44px #211047a6}
+body.paused-match .pause-actions button.gold{background:linear-gradient(#f9df91,#ffb964);color:#251436;border-color:#ffe4a0}
+.pause-summary,.pause-summary div+div{border-color:#604492}
+.pause-summary div,.score-breakdown{background:#251941}
+.result-red{background:linear-gradient(125deg,#651c47,#b42e6a)}
+.result-blue{background:linear-gradient(125deg,#273386,#3558ba)}
+.result-hero{box-shadow:0 7px 28px #0d061d85;border-color:#825ab5}
+.breakdown-label{background:#432d72}
+.result-outcome{color:#ffdb92}
+@media(max-width:600px){
+ body.season #panel,body.picker #panel{width:100%;background:#1d1334f0}
+ #bar .score-card,#bar .match-clock{min-height:43px}
+ #meter{min-width:0;padding:5px 7px;top:83px}
+ body.match #notice:not(:empty){top:88px;max-width:56vw}
+ body.match #notice[data-countdown="true"]{top:34%}
+}
+</style><style>
+body.season #panel:has(.control-settings),body.paused-match #panel:has(.control-settings){position:fixed;inset:0;margin:auto;transform:none;width:min(650px,94vw);height:fit-content;max-height:94dvh;padding:16px;overflow:auto;background:#201438;border:1px solid #8061b1;border-radius:14px}
+.control-settings h2{margin:0}
+.control-settings p{font-size:13px}
+.control-grid,.axis-grid{display:grid;gap:6px;align-items:center;font-size:13px}
+.control-grid{grid-template-columns:minmax(80px,1fr) repeat(3,minmax(0,1fr))}
+.axis-grid{grid-template-columns:1fr 1fr;margin-top:12px}
+.control-grid button,.control-settings select{min-width:0;width:100%;padding:6px;font:inherit;color:#fff;background:#31234e;border:1px solid #8061b1;border-radius:6px;overflow:hidden;text-overflow:ellipsis}
 </style></head><body><canvas id="view"></canvas><div id="bar"></div><section id="panel"></section><div id="controls"></div><div id="notice"></div><div id="stats"></div><script>/* The MIT License
 
 Copyright © 2010-2023 three.js authors
@@ -611,7 +729,7 @@ if(style.dye){
 }
 const hookMountY=Math.min(h-.03,i===5?.68:.47);
 const climbers=[];
-for(const side of spec[12]===4414?[]:[-1,1]){
+for(const side of [4414,6328].includes(spec[12])?[]:[-1,1]){
  const z=side*.19,mountX=back+.06;
  shell.box(mountX,.25,z,.051,.29,.055,0x424e5b);
  const stage=new T.Mesh(cube,new T.MeshStandardMaterial({color:0xb9c8d4,metalness:.35,roughness:.45}));root.add(stage);
@@ -1328,7 +1446,7 @@ let spot={x:H+1.1,z:0,a:PI};
 function clearInput(){Object.assign(input,{x:0,z:0,turn:0,intake:false,shoot:false,climb:false});keys.clear()}
 function screen(name){mode=name;document.body.className=name;panel.hidden=false;bar.innerHTML='';controls.innerHTML='';$('#notice').textContent='';clearInput();camera.clearViewOffset();drag=null}
 function offcentre(){if(innerWidth>innerHeight)camera.setViewOffset(innerWidth,innerHeight,-innerWidth*.15,0,innerWidth,innerHeight)}
-function season(){screen('season');for(const b of bots)b.root.visible=false;fuelSeeds.forEach((v,i)=>ballAt(i,...v));balls.count=fuelSeeds.length;balls.instanceMatrix.needsUpdate=true;focus.set(0,.15,0);camDist=13;camHeight=9;yaw=.38;offcentre();panel.innerHTML='<div class="ey">FIRST Robotics Competition &nbsp; / &nbsp; 2026</div><h1>REBUILT<span style="color:#e8bb62">.</span></h1><p>Drive the official field layout, collect fuel, score, and practice climbing.</p><div class="row"><button class="gold" id="enter">Singleplayer →</button><button id="tour">View field</button></div>';btn('enter','',editor);btn('tour','',()=>{screen('field');fieldMenu();panel.insertAdjacentHTML('beforeend',' <button class="smallbtn" id="exit">Back</button>');btn('exit','',season)})}
+function season(){screen('season');for(const b of bots)b.root.visible=false;fuelSeeds.forEach((v,i)=>ballAt(i,...v));balls.count=fuelSeeds.length;balls.instanceMatrix.needsUpdate=true;focus.set(0,.15,0);camDist=13;camHeight=9;yaw=.38;offcentre();panel.innerHTML='<div class="ey">FIRST Robotics Competition &nbsp; / &nbsp; 2026</div><h1>REBUILT<span style="color:#e8bb62">.</span></h1><p>Drive the official field layout, collect fuel, score, and practice driving both robots.</p><div class="row"><button class="gold" id="enter">Singleplayer →</button><button id="tour">View field</button><button id="settings">Controls</button></div>';btn('enter','',editor);btn('settings','',()=>controlSettings(season));btn('tour','',()=>{screen('field');fieldMenu();panel.insertAdjacentHTML('beforeend',' <button class="smallbtn" id="exit">Back</button>');btn('exit','',season)})}
 function picker(){screen('picker');player=bots[selected];for(const b of bots)b.root.visible=b===player;player.root.position.set(0,0,0);player.angle=0;resetClimber(player);player.root.rotation.set(0,0,0);focus.set(0,.36,0);camHeight=.79;camDist=1.78;yaw=.78;offcentre();balls.count=0;const s=player.spec;
 const rows=[['Speed',s[5],5,'m/s'],['Acceleration',s[6],9,'m/s²'],['Push',s[7],6,''],[rateLabels[player.i],s[8],34,' BPS'],['Intake rate',s[9],20,'/s'],['Sim capacity',s[10],105,''],['Shoot on move',Math.round(s[11]*100),100,'%']];
 panel.innerHTML='<div class="ey">Houston 2026 &nbsp; / &nbsp; '+String(selected+1).padStart(2,'0')+' of '+String(bots.length).padStart(2,'0')+'</div><h2>'+s[0]+'</h2><p>'+s[1]+'</p><p>'+robotNotes[player.i]+'</p><p><a style="color:#d9be87" target="_blank" rel="noopener" href="'+designRefs[player.i]+'">Design reference</a> · <a style="color:#d9be87" target="_blank" rel="noopener" href="https://frc-events.firstinspires.org/2026/team/'+s[12]+'">Matches</a></p>'+rows.map(([k,v,max,u])=>'<div class="stat"><span>'+k+'</span><span class="rail"><i style="width:'+v/max*100+'%"></i></span><b>'+v+u+'</b></div>').join('')+'<div class="row"><button class="nav" aria-label="Previous robot" id="prev">‹</button><button class="nav" aria-label="Next robot" id="cycle">›</button><button class="gold" id="next">Set start →</button></div>';btn('prev','',()=>{selected=(selected+bots.length-1)%bots.length;picker()});btn('cycle','',()=>{selected=(selected+1)%bots.length;picker()});btn('next','',editor);panel.insertAdjacentHTML('beforeend','<div class="roster"><button id="pick6328">6328 · Darwin</button><button id="pick4414">4414 · Rip Current</button></div>');for(const [i,b] of bots.entries()){const id='pick'+b.spec[12];$( '#'+id).setAttribute('aria-pressed',String(i===selected));btn(id,'',()=>{selected=i;picker()})}}
@@ -1344,7 +1462,7 @@ function editor(){
  player.root.rotation.y=.42;
  focus.set(0,.24,0);camDist=2.05;camHeight=1.08;yaw=.85;balls.count=0;
  panel.innerHTML=`<header class="setup-header"><div><div class="ey">2026 Rebuilt</div><h2>Single Player</h2></div><button id="home">Main menu</button></header>
- <div class="setup-grid"><aside class="setup-robot"><div class="ey">Selected robot</div><strong class="team-number">${player.spec[12]}</strong><h3>${player.spec[0]}</h3><button id="back">Change</button><img class="robot-preview" src="${setupPreviews[player.spec[12]]}" alt="${player.spec[0]}"><div class="ey alliance-heading">Alliance</div><div class="row"><button id="blue-side" aria-pressed="${s>0}">Blue</button><button id="red-side" aria-pressed="${s<0}">Red</button></div></aside>
+ <div class="setup-grid"><aside class="setup-robot"><div class="ey">Robot</div><div class="robot-summary"><div><strong class="team-number">${player.spec[12]}</strong><h3>${player.spec[0]}</h3><span>${player.spec[1]}</span></div><button id="back">Change</button></div><img class="robot-preview" src="${setupPreviews[player.spec[12]]}" alt="${player.spec[0]}"><div class="ey alliance-heading">Alliance</div><div class="row"><button id="blue-side" aria-pressed="${s>0}">Blue</button><button id="red-side" aria-pressed="${s<0}">Red</button></div></aside>
  <section class="setup-map"><div class="map-heading"><h3>Starting position</h3><button id="reset-spot">↶ Reset spot</button></div><canvas id="map" width="800" height="380" aria-label="Drag to set starting position"></canvas><div class="row map-tools"><span>Drag along the starting line</span><button id="left" aria-label="Turn left">↶</button><button id="right" aria-label="Turn right">↷</button><button id="move-up" aria-label="Move up the starting line">↑</button><button id="move-down" aria-label="Move down the starting line">↓</button></div></section></div>
  <footer class="setup-footer"><button id="setup-back">Back</button><button class="gold" id="start">Start match</button></footer>`;
  const setAlliance=side=>{
@@ -1355,9 +1473,9 @@ function editor(){
  btn('blue-side','',()=>setAlliance(1));btn('red-side','',()=>setAlliance(-1));btn('home','',season);btn('setup-back','',season);btn('reset-spot','',editor);
 const map=$('#map'),ctx=map.getContext('2d'),sx=map.width/(L*2+.6),sy=map.height/(W*2+.6),xx=x=>400+x*sx,zz=z=>190+z*sy;
 function draw(){
- ctx.fillStyle='#1a100c';ctx.fillRect(0,0,800,380);
+ ctx.fillStyle='#171027';ctx.fillRect(0,0,800,380);
  const rect=(x,z,w,d,color)=>{ctx.fillStyle=color;ctx.fillRect(xx(x),zz(z),w*sx,d*sy)};
- rect(-L,-W,2*L,2*W,'#231713');rect(-L,-W,L-H,2*W,'#321917');rect(H,-W,L-H,2*W,'#211d2a');rect(-.017,-W,.034,2*W,'#8193aa');
+ rect(-L,-W,2*L,2*W,'#261b3d');rect(-L,-W,L-H,2*W,'#512541');rect(H,-W,L-H,2*W,'#263663');rect(-.017,-W,.034,2*W,'#8193aa');
  ctx.lineWidth=2;ctx.strokeStyle='#a5b1c0';ctx.strokeRect(xx(-L),zz(-W),2*L*sx,2*W*sy);
  for(const side of [-1,1]){
   const accent=side>0?'#437dec':'#e44955';
@@ -1394,8 +1512,8 @@ const practiceDuration=160;
 function matchReadout(){
  const phase=preMatch>0?'READY':autoHold>0?'AUTO COMPLETE':phaseAt(elapsed);
  const clock=formatTime(practiceDuration-elapsed);
- const hub=side=>active(side)?'Hub active':'Hub inactive';
- return `<div class="score-card red-side"><span>Red<small>${hub(-1)}</small></span><b>${score[0]}</b></div><div class="match-clock"><b>${clock}</b><span>${phase==='TRANSITION'?'Transition · '+formatTime(30-elapsed):phase}</span></div><div class="score-card blue-side"><b>${score[1]}</b><span>Blue<small>${hub(1)}</small></span></div>`;
+ const hub=side=>`<small class="hub-state"><i aria-hidden="true"></i>${active(side)?'Hub active':'Hub inactive'}</small>`;
+ return `<div class="score-card red-side" data-active="${active(-1)}"><span>Red${hub(-1)}</span><b>${score[0]}</b></div><div class="match-clock"><b>${clock}</b><span>${phase==='TRANSITION'?'Transition · '+formatTime(30-elapsed):phase}</span></div><div class="score-card blue-side" data-active="${active(1)}"><b>${score[1]}</b><span>Blue${hub(1)}</span></div>`;
 }
 function renderScore(){
  const html=matchReadout();
@@ -1407,22 +1525,34 @@ function renderScore(){
   autoHold>0?`Auto complete · Transition in ${Math.ceil(autoHold-1e-8)}`:
   phase==='TRANSITION'&&firstInactive?`Transition · ${first} hub inactive first`:
   phase.startsWith('SHIFT')?`Your hub is ${active(player.side)?'active':'inactive'} · ${formatTime(30+25*(1+Math.floor((elapsed-30)/25))-elapsed)} left`:'';
- if(notice.textContent!==text)notice.textContent=text;
+ if(notice.textContent!==text){
+  notice.setAttribute('data-countdown',String(controlsLocked()));
+  notice.textContent=text;
+ }
 }
 function pauseGame(){
  if(mode!=='match')return;
  paused=true;clearInput();controls.innerHTML='';panel.hidden=false;document.body.classList.add('paused-match');
- panel.innerHTML=`<div class="ey">Singleplayer / ${player.spec[12]}</div><h2>Paused</h2><p class="pause-alliance">${player.side>0?'Blue':'Red'} alliance · ${player.spec[12]} ${player.spec[0]}</p><div class="pause-score">${matchReadout()}</div><div class="pause-actions"><button class="gold" id="resume">Resume</button><button id="reset">Restart match</button><button id="setup">Back to singleplayer</button><button id="quit">Title screen</button></div>`;
+ panel.innerHTML=`<div class="ey">Singleplayer / ${player.spec[12]}</div><h2>Paused</h2><p class="pause-alliance">${player.side>0?'Blue':'Red'} alliance · ${player.spec[12]} ${player.spec[0]}</p><div class="pause-score pause-summary"><div><span>You</span><b>${score[idx(player.side)]}</b></div><div><span>${controlsLocked()?'Waiting':phaseAt(elapsed)}</span><b>${formatTime(practiceDuration-elapsed)}</b></div><div><span>Opponent</span><b>${score[idx(-player.side)]}</b></div></div><div class="pause-actions"><button class="gold" id="resume">Resume</button><button id="reset">Restart match</button><button id="settings">Controls</button><button id="setup">Back to singleplayer</button><button id="quit">Title screen</button></div>`;
  btn('resume','',()=>{paused=false;panel.hidden=true;document.body.classList.remove('paused-match');gameControls()});
- btn('reset','',launch);btn('setup','',editor);btn('quit','',season);
+ btn('settings','',()=>controlSettings(pauseGame));btn('reset','',launch);btn('setup','',editor);btn('quit','',season);
 }
 function finishPractice(){
  screen('results');
+ const ours=score[idx(player.side)],theirs=score[idx(-player.side)];
+ const outcome=ours===theirs?'Tie game':ours>theirs?'Your alliance wins':'Opposing alliance wins';
  const rows=[['Auto fuel',autoFuel],['Teleop fuel',fuelPoints.map((p,i)=>p-autoFuel[i])],['Tower points',towerPoints],['Total',score]];
- panel.innerHTML=`<header class="setup-header"><div><div class="ey">Singleplayer / ${player.spec[12]}</div><h2>Match results</h2></div><button id="quit">Main menu</button></header><div class="result-hero"><div class="result-red"><span>Red</span><b>${score[0]}</b></div><div class="result-blue"><span>Blue</span><b>${score[1]}</b></div></div><div class="result-grid"><section class="your-score"><h3>Your score</h3><p>${player.spec[12]} · ${player.spec[0]}</p><strong>${score[idx(player.side)]}</strong></section><section><h3 class="breakdown-label">Breakdown</h3><table class="score-breakdown"><thead><tr><th>Red</th><th>Scoring breakdown</th><th>Blue</th></tr></thead><tbody>${rows.map(([name,v])=>`<tr><td>${v[0]}</td><th scope="row">${name}</th><td>${v[1]}</td></tr>`).join('')}</tbody></table></section></div><div class="row results-actions"><button id="setup">Singleplayer setup</button><button class="gold" id="reset">Play again</button></div>`;
+ panel.innerHTML=`<header class="setup-header"><div><div class="ey">Singleplayer / ${player.spec[12]}</div><h2>Match results</h2></div><button id="quit">Main menu</button></header><div class="result-hero"><div class="result-red"><span>${player.side<0?"Red · Your alliance":"Red"}</span><b>${score[0]}</b></div><div class="result-blue"><span>${player.side>0?"Blue · Your alliance":"Blue"}</span><b>${score[1]}</b></div></div><div class="result-grid"><section class="your-score"><h3>Your score</h3><p>${player.spec[12]} · ${player.spec[0]}</p><strong>${ours}</strong><span class="result-outcome">${outcome}</span><dl class="player-breakdown">${rows.slice(0,3).map(([name,points])=>`<div><dt>${name}</dt><dd>${points[idx(player.side)]}</dd></div>`).join('')}</dl></section><section><h3 class="breakdown-label">Breakdown</h3><table class="score-breakdown"><thead><tr><th>Red</th><th>Scoring breakdown</th><th>Blue</th></tr></thead><tbody>${rows.map(([name,v])=>`<tr><td>${v[0]}</td><th scope="row">${name}<span class="score-split" aria-hidden="true"><i style="flex:${v[0]}"></i><i style="flex:${v[1]}"></i></span></th><td>${v[1]}</td></tr>`).join('')}</tbody></table></section></div><div class="row results-actions"><button id="setup">Singleplayer setup</button><button class="gold" id="reset">Play again</button></div>`;
  btn('quit','',season);btn('setup','',editor);btn('reset','',launch);
 }
-ticks.push(()=>{if(mode==='match'&&!paused){const m=$('#meter');if(m)m.textContent='FUEL '+player.load+'/'+fuelCapacity(player);const fire=$('#fire');if(fire){const plan=launchPlan(player);fire.textContent=controlsLocked()?'Wait':plan.legal?(active(player.side)?'Shoot':'Shoot · 0 pts'):plan.passReady?'Pass':'Clear bump';}const c=$('#climb');if(c){const phase=player.climbCycle?.phase;c.textContent=phase==='hang'?'Release':phase?'Climbing…':'Climb'}}});document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='match'&&!paused)pauseGame()});season();
+ticks.push(()=>{if(mode==='match'&&!paused){const m=$('#meter');if(m){
+ const capacity=fuelCapacity(player),load=player.load;
+ const status=load+'/'+capacity;
+ if(m.dataset.fuel!==status){
+  m.dataset.fuel=status;
+  m.innerHTML=`<span class="fuel-label"><span>FUEL</span><b>${status}</b></span><meter aria-label="Fuel capacity" min="0" max="${capacity}" value="${load}"></meter>`;
+ }
+}const fire=$('#fire');if(fire){const plan=launchPlan(player);fire.textContent=controlsLocked()?'Wait':plan.legal?(active(player.side)?'Shoot':'Shoot · 0 pts'):plan.passReady?'Pass':'Clear bump';}const c=$('#climb');if(c){const phase=player.climbCycle?.phase;c.textContent=phase==='hang'?'Release':phase?'Climbing…':'Climb'}}});document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='match'&&!paused)pauseGame()});season();
 
 
 
@@ -1740,8 +1870,67 @@ season();
 // All field tags use the same atlas tile. Render the set with one instanced draw.
 const tagFaces=scene.children.filter(m=>m.isMesh&&m.material?.map===badge);
 if(tagFaces.length){const marks=new T.InstancedMesh(new T.PlaneGeometry(1,1),tagFaces[0].material,tagFaces.length);tagFaces.forEach((m,i)=>{m.updateMatrix();const dims=m.geometry.parameters;const matrix=m.matrix.clone().multiply(new T.Matrix4().makeScale(dims.width,dims.height,1));marks.setMatrixAt(i,matrix);scene.remove(m);m.geometry.dispose();if(i)m.material.dispose()});marks.computeBoundingSphere();scene.add(marks)}
-const keyBindings=new Set(['KeyR','KeyH','KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight','KeyQ','KeyE','KeyF','KeyC','Space','Escape']);
-let gamepad=null,pauseHeld=false,hopperHeld=false;
+const controlActions=[
+ ['forward','Drive forward',['KeyW','ArrowUp']],['back','Drive backward',['KeyS','ArrowDown']],
+ ['left','Drive left',['KeyA','ArrowLeft']],['right','Drive right',['KeyD','ArrowRight']],
+ ['ccw','Turn left',['KeyQ']],['cw','Turn right',['KeyE']],
+ ['intake','Intake',['KeyF'],6],['shoot','Shoot / pass',['Space'],7],
+ ['hopper','Toggle hopper',['KeyH'],2],['roof','Toggle Darwin roof',['KeyR'],3],
+ ['pause','Pause / resume',['Escape'],9]
+];
+const axes=[['driveX','Drive sideways',0],['driveZ','Drive forward/back',1],['turn','Steer',2]];
+const defaultBindings=()=>Object.fromEntries(controlActions.map(([id,,codes,pad])=>[id,{codes:[...codes],pad:pad??null}]));
+const defaultAxes=()=>Object.fromEntries(axes.map(([id,,axis])=>[id,axis]));
+let bindings=defaultBindings(),axisBindings=defaultAxes();
+try{
+ const saved=JSON.parse(localStorage.getItem('rebuilt-controls-v1'));
+ for(const [id] of controlActions){
+  const item=saved?.bindings?.[id];
+  if(Array.isArray(item?.codes)&&item.codes.every(code=>typeof code==='string')&&
+   (item.pad===null||Number.isInteger(item.pad)&&item.pad>=0&&item.pad<=16))bindings[id]=item;
+ }
+ for(const [id] of axes){
+  const axis=saved?.axes?.[id];
+  if(Number.isInteger(axis)&&axis>=0&&axis<=3)axisBindings[id]=axis;
+ }
+}catch{}
+let gamepad=null,settingsOpen=false,captureKey=null;
+const padHeld=new Set();
+const padNames=['A / Cross','B / Circle','X / Square','Y / Triangle','LB / L1','RB / R1','LT / L2','RT / R2','View / Share','Menu / Options','Left stick click','Right stick click','D-pad up','D-pad down','D-pad left','D-pad right','Home'];
+const axisNames=['Left stick horizontal','Left stick vertical','Right stick horizontal','Right stick vertical'];
+function saveControls(){
+ try{localStorage.setItem('rebuilt-controls-v1',JSON.stringify({bindings,axes:axisBindings}))}catch{}
+}
+function controlSettings(back){
+ settingsOpen=true;
+ clearInput();
+ panel.innerHTML=`<div class="control-settings"><h2>Controls</h2><p>Choose a key slot, then press a key. A key or button can control one action.</p><div class="control-grid"><strong>Action</strong><strong>Key</strong><strong>Alternate</strong><strong>Controller</strong>${controlActions.map(([id,label,,pad])=>`<span>${label}</span>${[0,1].map(slot=>`<button id="bind-${id}-${slot}" aria-label="${label}, ${slot?'alternate':'primary'} key">${bindings[id].codes[slot]||'Unbound'}</button>`).join('')}${pad===undefined?'<span></span>':`<select id="pad-${id}" aria-label="${label} controller button"><option value="">Unbound</option>${padNames.map((name,i)=>`<option value="${i}" ${bindings[id].pad===i?'selected':''}>${name}</option>`).join('')}</select>`}`).join('')}</div><div class="axis-grid">${axes.map(([id,label])=>`<label for="axis-${id}">${label}</label><select id="axis-${id}">${axisNames.map((name,i)=>`<option value="${i}" ${axisBindings[id]===i?'selected':''}>${name}</option>`).join('')}</select>`).join('')}</div><div class="row"><button class="gold" id="controls-done">Done</button><button id="controls-defaults">Restore defaults</button></div></div>`;
+ const redraw=()=>{saveControls();controlSettings(back)};
+ for(const [id,, ,pad] of controlActions){
+  for(const slot of [0,1]){
+   const button=$('#bind-'+id+'-'+slot);
+   button.onclick=()=>{
+    for(const [action] of controlActions)for(const i of [0,1])$('#bind-'+action+'-'+i).textContent=bindings[action].codes[i]||'Unbound';
+    button.textContent='Press a key';
+    captureKey=code=>{
+     for(const binding of Object.values(bindings))binding.codes=binding.codes.map(key=>key===code?'':key);
+     while(bindings[id].codes.length<=slot)bindings[id].codes.push('');
+     bindings[id].codes[slot]=code;
+     redraw();
+     $('#bind-'+id+'-'+slot).focus();
+    };
+   };
+  }
+  if(pad!==undefined)$('#pad-'+id).onchange=e=>{
+   const value=e.target.value===''?null:Number(e.target.value);
+   if(value!==null)for(const binding of Object.values(bindings))if(binding.pad===value)binding.pad=null;
+   bindings[id].pad=value;redraw();$('#pad-'+id).focus();
+  };
+ }
+ for(const [id] of axes)$('#axis-'+id).onchange=e=>{axisBindings[id]=Number(e.target.value);saveControls()};
+ btn('controls-defaults','',()=>{captureKey=null;bindings=defaultBindings();axisBindings=defaultAxes();redraw()});
+ btn('controls-done','',()=>{captureKey=null;settingsOpen=false;back()});
+}
 function toggleHopper(){
  if(mode!=='match'||paused||controlsLocked()||!player.blenderParts)return;
  player.hopperClosed=!player.hopperClosed;
@@ -1771,36 +1960,43 @@ function togglePause(){
  if(paused)$('#resume')?.click();
  else pauseGame();
 }
+const toggles={pause:togglePause,roof:toggleRoof,hopper:toggleHopper};
 addEventListener('keydown',e=>{
- if(mode!=='match'||!keyBindings.has(e.code))return;
+ if(settingsOpen){
+  if(captureKey&&!e.repeat&&e.code&&e.code!=='Unidentified'){
+   e.preventDefault();
+   const capture=captureKey;captureKey=null;capture(e.code);
+  }
+  return;
+ }
+ if(mode!=='match')return;
+ const action=controlActions.find(([id])=>bindings[id].codes.includes(e.code))?.[0];
+ if(!action)return;
  e.preventDefault();
- if(e.code==='Escape'){if(!e.repeat)togglePause();return}
- if(e.code==='KeyR'){if(!e.repeat)toggleRoof();return}
- if(e.code==='KeyH'){if(!e.repeat)toggleHopper();return}
+ if(toggles[action]){if(!e.repeat)toggles[action]();return}
  if(!paused)keys.add(e.code);
 });
 addEventListener('keyup',e=>keys.delete(e.code));
 addEventListener('blur',clearInput);
 function deadzone(value=0){return Math.sign(value)*Math.max(0,(Math.abs(value)-.16)/.84)}
+const buttonDown=id=>bindings[id].pad!==null&&!!gamepad?.buttons[bindings[id].pad]?.pressed;
 function pollGamepad(){
  gamepad=Array.from(navigator.getGamepads?.()||[]).find(p=>p?.connected&&p.mapping==='standard')||null;
- const start=!!gamepad?.buttons[9]?.pressed;
- if(start&&!pauseHeld)togglePause();
- pauseHeld=start;
- const hopper=!!gamepad?.buttons[2]?.pressed;
- if(hopper&&!hopperHeld)toggleHopper();
- hopperHeld=hopper;
+ for(const [id,toggle] of Object.entries(toggles)){
+  if(buttonDown(id)){if(!settingsOpen&&!padHeld.has(id))toggle();padHeld.add(id)}
+  else padHeld.delete(id);
+ }
 }
 function readPlayerInput(){
- const key=code=>Number(keys.has(code)),button=i=>!!gamepad?.buttons[i]?.pressed;
- const x=deadzone(gamepad?.axes[0]),z=deadzone(gamepad?.axes[1]);
+ const key=id=>Number(bindings[id].codes.some(code=>keys.has(code)));
+ const axis=id=>deadzone(gamepad?.axes[axisBindings[id]]);
  return {
-  x:clamp(input.x+x+Math.max(key('KeyD'),key('ArrowRight'))-Math.max(key('KeyA'),key('ArrowLeft')),-1,1),
-  z:clamp(input.z+z+Math.max(key('KeyS'),key('ArrowDown'))-Math.max(key('KeyW'),key('ArrowUp')),-1,1),
-  turn:clamp(input.turn+deadzone(gamepad?.axes[2])+key('KeyE')-key('KeyQ'),-1,1),
-  intake:input.intake||key('KeyF')||button(6),
-  shoot:input.shoot||key('Space')||button(7),
-  climb:input.climb||key('KeyC')||button(0)
+  x:clamp(input.x+axis('driveX')+key('right')-key('left'),-1,1),
+  z:clamp(input.z+axis('driveZ')+key('back')-key('forward'),-1,1),
+  turn:clamp(input.turn+axis('turn')+key('cw')-key('ccw'),-1,1),
+  intake:input.intake||key('intake')||buttonDown('intake'),
+  shoot:input.shoot||key('shoot')||buttonDown('shoot'),
+  climb:false
  };
 }
 const controlLayout=gameControls;
@@ -1811,9 +2007,9 @@ gameControls=function(){
  btn('hopper-toggle','',toggleHopper);
  controls.insertAdjacentHTML('beforeend','<button class="smallbtn" id="roof-toggle" style="bottom:159px;right:16px">Raise roof</button>');
  btn('roof-toggle','',toggleRoof);
- $('#climb').hidden=player.spec[12]===4414;
+ $('#climb').hidden=!player.climbers.length;
  updateHopperButton();
- controls.insertAdjacentHTML('beforeend','<details class="bindings"><summary>Controls</summary><div><strong>Keyboard</strong> WASD / arrows · Q/E turn · F intake · H hopper · R Darwin roof · Space shoot/pass · C climb/release · Esc pause<br><strong>Controller</strong> Left stick drive · right stick turn · LT/L2 intake · X/□ hopper · RT/R2 shoot/pass · A/× climb/release · Menu pause</div></details>');
+
 };
 const bindingsStyle=document.createElement('style');
 bindingsStyle.textContent='.bindings{position:fixed;right:14px;top:70px;color:#fff;background:#181e26ef;border:1px solid #ffffff35;border-radius:8px;padding:8px 12px;font:13px/1.55 system-ui;pointer-events:auto;max-width:min(420px,85vw)}.bindings summary{cursor:pointer}.bindings div{margin-top:5px}';
